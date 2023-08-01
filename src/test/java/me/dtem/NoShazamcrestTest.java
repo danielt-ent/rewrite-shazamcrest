@@ -1,4 +1,4 @@
-package com.yourorg;
+package me.dtem;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
@@ -7,17 +7,18 @@ import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
 
-class NoGuavaListsNewArrayListTest implements RewriteTest {
+class NoShazamcrestTest implements RewriteTest {
+    Object foo;
 
     //Note, you can define defaults for the RecipeSpec and these defaults will be used for all tests.
     //In this case, the recipe and the parser are common. See below, on how the defaults can be overridden
     //per test.
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new NoGuavaListsNewArrayList())
+        spec.recipe(new NoShazamcrest())
             .parser(JavaParser.fromJavaVersion()
                 .logCompilationWarningsAndErrors(true)
-                .classpath("guava"));
+                .classpath("shazamcrest"));
     }
 
     @Test
@@ -28,23 +29,29 @@ class NoGuavaListsNewArrayListTest implements RewriteTest {
             spec -> spec
                 .parser(JavaParser.fromJavaVersion()
                     .logCompilationWarningsAndErrors(false)
-                    .classpath("guava")),
+                    .classpath("hamcrest", "assertj-core", "shazamcrest")),
             //language=java
             java("""
-                    import com.google.common.collect.*;
-                    
-                    import java.util.List;
+                    import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
+                    import static org.hamcrest.MatcherAssert.assertThat;
+                    import static org.hamcrest.core.Is.is;
                     
                     class Test {
-                        List<Integer> cardinalsWorldSeries = Lists.newArrayList();
+                        public void someTest() {
+                            assertThat(new Object(), is(sameBeanAs(new Object())));
+                        }
                     }
                     """,
                 """
-                    import java.util.ArrayList;
-                    import java.util.List;
+                    import org.assertj.core.api.Assertions;
+                    
+                    import static org.assertj.core.api.Assertions.assertThat;
+                    import static org.hamcrest.core.Is.is;
                     
                     class Test {
-                        List<Integer> cardinalsWorldSeries = new ArrayList<>();
+                        public void someTest() {
+                            Assertions.assertThat(new Object());
+                        }
                     }
                     """
             )

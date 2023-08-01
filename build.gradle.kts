@@ -15,6 +15,7 @@ plugins {
 
     id("nebula.javadoc-jar") version "18.4.0"
     id("nebula.source-jar") version "18.4.0"
+    id "com.github.ben-manes.versions" version "$version"
 }
 
 apply(plugin = "nebula.publish-verification")
@@ -30,7 +31,7 @@ java {
 }
 
 // Set as appropriate for your organization
-group = "com.yourorg"
+group = "me.dtem"
 description = "Rewrite recipes."
 
 repositories {
@@ -53,9 +54,7 @@ configurations.all {
 val rewriteBomVersion = "latest.integration"
 
 dependencies {
-    compileOnly("org.projectlombok:lombok:latest.release")
     compileOnly("com.google.code.findbugs:jsr305:latest.release")
-    annotationProcessor("org.projectlombok:lombok:latest.release")
     implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:${rewriteBomVersion}"))
 
     implementation("org.openrewrite:rewrite-java")
@@ -66,8 +65,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:latest.release")
     testImplementation("org.junit.jupiter:junit-jupiter-params:latest.release")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:latest.release")
+    testRuntimeOnly("com.shazam:shazamcrest:0.11") {
+        exclude("*")
+    }
+    testRuntimeOnly("org.hamcrest:hamcrest:latest.release")
     testRuntimeOnly("com.google.guava:guava:latest.release")
-
     testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.assertj:assertj-core:latest.release")
 }
